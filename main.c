@@ -323,6 +323,8 @@ void ClearScreen() {
 }
 
 void ShowPasswords() {
+	system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone tried to view your password.\" >nul 2>&1");
+
 	
 		printf("\n");
 		
@@ -359,7 +361,7 @@ void AskForPassword() {
 		
 		if (comparison == 0)
 		
-		{	
+		{
 			ClearScreen();
 			printf(">> CORRECT PASSWORD. ACCESS CONFIRMED <<\n");
 			printf("\n");
@@ -373,6 +375,8 @@ void AskForPassword() {
 				
 				printf(">> WRONG PASSWORD. ACCESS DENIED. PROGRAM ENDED <<\n");
 				printf("\n");
+				
+system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone tried to enter to yr  passmanager.\" >nul 2>&1");
 				exit(0); //Exits the program.
 			}
 				
@@ -668,6 +672,7 @@ PauseBeforeClear();
 void DeleteSpecificPassword() {
 	
 	ClearScreen();
+	system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone is trying to DELETE a specific password.\" >nul 2>&1");
 	AskForPassword();
 	ShowPasswords();
 		
@@ -704,6 +709,7 @@ PauseBeforeClear();
 
 //DELETE ALL IDs & PASSWORDS.
 void DeleteAllPasswords() {
+	system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone is trying to DELETE ALL saved passwords.\" >nul 2>&1");
 	
 	AskForPassword();
 	
