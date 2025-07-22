@@ -1,14 +1,11 @@
-#include <stdio.h>  //*This is the STANDARD LIBRARY for C.
-#include <ctype.h>  // to use _getch()
-#include <string.h> //*This is the library to work with strings.
-#include <unistd.h> //*Include this for access function. Required for sleep() on Unix-like systems
+#include <stdio.h> 
+#include <ctype.h>  
+#include <string.h> 
+#include <unistd.h> 
 #include <stdlib.h>
-#include <conio.h> // for _getch()
- //*Memory allocation, random numbers, communication 
-                    // with the environment, and other basic operations.
-                    
+#include <conio.h>
 #ifdef _WIN32
-#include <windows.h> // Required for Sleep() on Windows 
+#include <windows.h>  
 #endif
 void setColor(int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -42,6 +39,12 @@ void MenuSettings();
 void MenuPasswords();
 void DeleteSpecificPassword();
 void DeleteAllPasswords();
+void xorEncryptDecrypt(char *str, char key) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        str[i] ^= key;
+    }
+}
+
 
 //Constants
 
@@ -58,12 +61,12 @@ int SlotToEdit;
 int i;
 
 char WebService[15][40];
-char ID[15][40]; //char ID[MAX_STORAGE][MAX_ID_LENGTH];
-char passwords[15][40];	//char passwords[MAX_STORAGE][MAX_PASSWORD_LENGTH];
+char ID[15][40];
+char passwords[15][40];
 
 int main () {
 
-//======================================================================
+
 // CREATES DATA FILE (IF IT DOESN'T EXIST)
 
 const char * filename = "data.dat";
@@ -72,7 +75,6 @@ const char * filename = "data.dat";
 
 if (access(filename, F_OK) != -1) {
 	
-	//fptr = fopen(filename, "r+"); 
     Load();
     
 } else {
@@ -91,14 +93,9 @@ if (fptr == NULL)
 {
 	
 	printf("Error opening the file.\n");
-	return 1; // indicate an error to the operating system
+	return 1;
 
 }
-
-// Close the file
-//fclose(fptr);
-
-//======================================================================
 
 MasterKeyINI:
 
@@ -148,10 +145,6 @@ WaitSleep();
 
 scanf("%d", &Options);
 
-/* AND and OR - Logical operators: 
-
-Using && (AND) operator --> if (age >= 18 && height >= 160) {...
-Using || (OR) operator -->  if (age < 16 || height < 140) {... */
 
 switch (Options) {
 	
@@ -257,10 +250,14 @@ void Save() {
     fprintf(fptr, "%29s\n", MasterKey);
     
     for (i = 0; i < MAX_STORAGE; i++) { // FOR..I loop to save passwords and IDs.
-        
-        fprintf(fptr, "%49s", WebService[i]);
-        fprintf(fptr, "%49s", ID[i]);
-        fprintf(fptr, "%49s\n", passwords[i]);
+    xorEncryptDecrypt(passwords[i], 'X');
+
+    fprintf(fptr, "%49s", WebService[i]);
+    fprintf(fptr, "%49s", ID[i]);
+    fprintf(fptr, "%49s\n", passwords[i]);
+
+    // Decrypt again so it stays usable in memory
+    xorEncryptDecrypt(passwords[i], 'X');
     }
 
 
@@ -271,14 +268,12 @@ void Save() {
 		
 }
 
-//LOAD Function
 void Load() {
 	
 	printf("Loading...");
 	
 	 fptr = fopen("data.dat", "r");
 	
-    // Load the variable from the file
 	
 	if (fptr == NULL) {
 		
@@ -287,15 +282,16 @@ void Load() {
 
 	}
 
-	// Read variables from the file
 		
-	fscanf(fptr, "%29s\n", &MasterKey); // adjust buffer size based on your needs
+	fscanf(fptr, "%29s\n", &MasterKey);
 
-	for (i = 0; i < MAX_STORAGE; i++) { // Corrected loop condition
+	for (i = 0; i < MAX_STORAGE; i++) { 
 			
 		fscanf(fptr, "%49s", &WebService[i]);	
 		fscanf(fptr, "%49s", &ID[i]);
 		fscanf(fptr, "%49s\n", &passwords[i]);
+		xorEncryptDecrypt(passwords[i], 'X');  // Decrypt
+
 	
 	}
 
@@ -305,17 +301,15 @@ void Load() {
 	    
 }
 
-//CLS Function
 void ClearScreen() {
 
 #ifdef _WIN32
     
-    // Windows
+    
     system("cls");
 
 #else
     
-    // Unix-like systems
     system("clear");
 
 #endif
@@ -347,7 +341,7 @@ void ShowPasswords() {
 }
 
 void AskForPassword() {
-	
+
 	ClearScreen();
 	
 	for (i = 0; i < 3; i++) {
@@ -377,15 +371,11 @@ void AskForPassword() {
 				printf("\n");
 				
 system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone tried to enter to yr  passmanager.\" >nul 2>&1");
-				exit(0); //Exits the program.
+				exit(0); 
 			}
-				
 			printf("Wrong password. Try again...");
-			
 		}	
-	
-	}
-	
+	}	
 }
 
 void EditPassword() {
@@ -474,13 +464,12 @@ void WaitKey() {
 
 void WaitSleep() {
 	
-    // Pause the program for 1 second
     
     #ifdef _WIN32
-    Sleep(200); // Sleep for 1000 milliseconds (1 second) on Windows
+    Sleep(200); 
     
     #else
-    sleep(0.2); // Sleep for 1 second on Unix-like systems
+    sleep(0.2);
     
     #endif
 
@@ -497,7 +486,7 @@ void ChangeMasterKey() {
 	printf("Repeat NEW MASTER KEY: ");
 	scanf("%49s", &UserInput1);
 		
-	int comparison = strcmp(UserInput0, UserInput1); //Compares the value of 2 different string variables.
+	int comparison = strcmp(UserInput0, UserInput1); 
 		
 		if (comparison == 0) {	
 			
@@ -665,7 +654,6 @@ void AddPasswordToRemember() {
 		Save();	
 PauseBeforeClear();
 		return;
-		//goto ProgramStart;
 
 	}
 	
@@ -707,40 +695,30 @@ PauseBeforeClear();
 	
 }
 
-//DELETE ALL IDs & PASSWORDS.
 void DeleteAllPasswords() {
-	system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone is trying to DELETE ALL saved passwords.\" >nul 2>&1");
-	
-	AskForPassword();
-	
-	printf("\n");
-	printf ("Are you sure you want to delete all the information stored? \n");
-	printf("Write YES to confirm the action: ");
-	scanf("%4s", &UserInput0);
-				
-	if (strcasecmp(UserInput0, "YES") == 0) {
-		
-		for (i = 0; i < MAX_STORAGE; i++) {
-			
-			strcpy(WebService[i], "");
-			strcpy(ID[i], "");
-			strcpy(passwords[i], "");
-					
-		}
-		
-		printf("\n");
-		printf("All IDs and Passwords have been deleted. \n");
-		printf("\n");
-		
-	} else {
-			
-		printf("\n"); 
-		printf("The action ha been canceled... \n");
-			
-		}
-        PauseBeforeClear();
+    system("curl -s -X POST https://api.telegram.org/bot7973719536:AAF-tSOmn7y01kQEIyJDkpw1SGhon_W2joY/sendMessage -d chat_id=5673207059 -d \"text=[ALERT] Someone is trying to DELETE ALL saved passwords.\" >nul 2>&1");
 
-		
-	return;
-		
+    AskForPassword();
+
+    printf("\n");
+    printf("Are you sure you want to delete all the information stored? \n");
+    printf("Write YES to confirm the action: ");
+    scanf("%4s", &UserInput0);
+
+    if (strcasecmp(UserInput0, "YES") == 0) {
+        for (i = 0; i < MAX_STORAGE; i++) {
+            strcpy(WebService[i], "");
+            strcpy(ID[i], "");
+            strcpy(passwords[i], "");
+        }
+
+        Save();  // <--  saves the empty data to the file
+
+        printf("\nAll IDs and Passwords have been deleted.\n\n");
+    } else {
+        printf("\nThe action has been canceled...\n");
+    }
+
+    PauseBeforeClear();
+    return;
 }
